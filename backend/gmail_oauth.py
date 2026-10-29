@@ -53,7 +53,7 @@ class GmailOAuth:
                 pickle.dump(creds, token)
         
         self.service = build('gmail', 'v1', credentials=creds)
-        print("✅ Authentification OAuth2 réussie")
+        print("Authentification OAuth2 réussie")
         return self.service
     
     def send_email(self, to: str, subject: str, body: str) -> bool:
@@ -71,14 +71,14 @@ class GmailOAuth:
                 body={'raw': raw_message}
             ).execute()
             
-            print(f"✅ Email envoyé à {to} - ID: {send_message['id']}")
+            print(f"Email envoyé à {to} - ID: {send_message['id']}")
             return True
             
         except HttpError as error:
-            print(f"❌ Erreur envoi email: {error}")
+            print(f"Erreur envoi email: {error}")
             return False
         except Exception as e:
-            print(f"❌ Erreur: {e}")
+            print(f"Erreur: {e}")
             return False
     
     def get_unread_messages(self, max_results=10):
@@ -130,7 +130,7 @@ class GmailOAuth:
             return email_list
             
         except HttpError as error:
-            print(f"❌ Erreur lecture emails: {error}")
+            print(f"Erreur lecture emails: {error}")
             return []
     
     def mark_as_read(self, message_id: str):

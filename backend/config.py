@@ -63,17 +63,17 @@ class Config:
         errors = []
         
         if not cls.GROQ_API_KEY:
-            errors.append("❌ GROQ_API_KEY manquante")
+            errors.append("GROQ_API_KEY manquante")
         
         if not cls.GMAIL_ADRESSE or not cls.GMAIL_MOT_DE_PASSE:
-            errors.append("❌ Configuration Gmail manquante")
+            errors.append("Configuration Gmail manquante")
         
         if errors:
             for e in errors:
                 print(e)
             return False
         
-        print("✅ Configuration valide")
+        print("Configuration valide")
         return True
 
 # Instance pour faciliter l'accès

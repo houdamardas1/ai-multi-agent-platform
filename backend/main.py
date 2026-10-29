@@ -109,9 +109,9 @@ class SimpleStorage:
         if PSYCOPG2_OK and self.pool:
             self.use_db = True
             self._init_tables()
-            logger.info("✅ PostgreSQL pool connecte")
+            logger.info("PostgreSQL pool connecte")
         else:
-            logger.info("📝 Utilisation du stockage memoire")
+            logger.info("Utilisation du stockage memoire")
     
     @contextmanager
     def _get_connection(self):
@@ -141,7 +141,7 @@ class SimpleStorage:
             
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_requests_timestamp ON requests_history(timestamp DESC)')
             conn.commit()
-            logger.info("📋 Tables initialisees")
+            logger.info("Tables initialisees")
     
     def add_email(self, intention, sujet, expediteur, response_time: float = None):
         """Stocke uniquement l'historique (pas les stats)"""
@@ -242,11 +242,11 @@ class DBConnectionManager:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Gère le cycle de vie de l'application"""
-    logger.info("🚀 Démarrage de l'application...")
+    logger.info("Démarrage de l'application...")
     init_workflows_table()
-    logger.info("✅ Tables initialisées")
+    logger.info("Tables initialisées")
     yield
-    logger.info("👋 Arrêt de l'application...")
+    logger.info("Arrêt de l'application...")
 
 # ===================================================================
 # INITIALISATION
@@ -272,10 +272,10 @@ if PSYCOPG2_OK:
         user = os.getenv("DATABASE_USER", "agents_user")
         password = os.getenv("DATABASE_PASSWORD", "")
         
-        # ✅ CORRECTION : Utiliser 127.0.0.1 au lieu de localhost
+        # CORRECTION : Utiliser 127.0.0.1 au lieu de localhost
         db_pool = SimpleConnectionPool(1, 10, host=host, port=port, dbname=dbname, user=user, password=password, connect_timeout=10)
     except Exception as e:
-        logger.warning(f"⚠️ Pool non disponible: {e}")
+        logger.warning(f"Pool non disponible: {e}")
 
 storage = SimpleStorage(db_pool)
 
@@ -396,7 +396,7 @@ def init_workflows_table():
                     updated_at TIMESTAMP DEFAULT NOW()
                 )
             """)
-            logger.info("✅ Table workflows initialisée")
+            logger.info("Table workflows initialisée")
     except Exception as e:
         logger.error(f"Erreur init workflows table: {e}")
 
@@ -532,7 +532,7 @@ async def dashboard_requests(limite: int = 50, user_data: dict = Depends(verify_
                     "resume_ia": {"summary": (req['resume_ia'] or "")[:150], "action": "Aucune", "confidence": req['confidence'] or 85},
                     "confidence": req['confidence'] or 85,
                     "source": "requete",
-                    "source_icon": "📋"
+                    "source_icon": ""
                 })
             
             cursor.execute("""
@@ -565,13 +565,13 @@ async def dashboard_requests(limite: int = 50, user_data: dict = Depends(verify_
                 
                 for email in emails:
                     if email['email_type'] == 'received':
-                        source_icon = "📥"
+                        source_icon = ""
                         source_text = "Email recu"
                     elif email['email_type'] == 'sent':
-                        source_icon = "📤"
+                        source_icon = ""
                         source_text = "Email envoye"
                     else:
-                        source_icon = "📧"
+                        source_icon = ""
                         source_text = "Email"
                     
                     items.append({
@@ -710,7 +710,7 @@ async def dashboard_logs(limite: int = 50, user_data: dict = Depends(verify_toke
 @app.get("/api/dashboard/trends")
 async def dashboard_trends(user_data: dict = Depends(verify_token)):
     """Retourne les tendances réelles depuis la base de données"""
-    # ✅ Utilise les vraies données depuis la base
+    # Utilise les vraies données depuis la base
     trends = agent.get_tendances_hebdomadaires_reelles()
     
     # Si aucune donnée réelle, retourne un tableau vide
@@ -1082,25 +1082,25 @@ async def get_client_logs_endpoint(client_id: str, user_data: dict = Depends(ver
         for row in rows:
             if row['status'] == 'success':
                 level = "SUCCESS"
-                level_icon = "✅"
+                level_icon = ""
             elif row['status'] == 'failed':
                 level = "ERROR"
-                level_icon = "❌"
+                level_icon = ""
             else:
                 level = "INFO"
-                level_icon = "ℹ️"
+                level_icon = ""
             
             action = row['action']
             if "email_received" in action or "Email client recu" in action:
-                message = "📧 Email client recu"
+                message = "Email client recu"
             elif "email_processed" in action or "traite avec succes" in action:
-                message = "✅ Email traite avec succes"
+                message = "Email traite avec succes"
             elif "analysis" in action:
-                message = "🧠 Analyse IA terminee"
+                message = "Analyse IA terminee"
             elif "crm" in action.lower():
-                message = "🔄 CRM synchronise"
+                message = "CRM synchronise"
             elif "ticket" in action.lower():
-                message = "🎫 Ticket support cree"
+                message = "Ticket support cree"
             else:
                 message = action
             
@@ -1533,15 +1533,15 @@ async def get_sent_emails(limite: int = 100, user_data: dict = Depends(verify_to
         return {"sent_emails": [], "total": 0}
 
 # ===================================================================
-# ✅ ENDPOINT VALIDATION EMAIL AVEC EMAILS PROFESSIONNELS
+# ENDPOINT VALIDATION EMAIL AVEC EMAILS PROFESSIONNELS
 # ===================================================================
 @app.post("/api/emails/validate/{email_id}")
 async def validate_and_send_email(email_id: str, data: Optional[dict] = None, user_data: dict = Depends(verify_token)):
     """Valide un email et l'envoie - L'email apparaît immédiatement dans 'Emails envoyés'"""
     try:
-        logger.info(f"📨 Demande de validation de l'email: {email_id}")
+        logger.info(f"Demande de validation de l'email: {email_id}")
         
-        # ✅ Utiliser get_connection pour avoir le contrôle du commit
+        # Utiliser get_connection pour avoir le contrôle du commit
         with DBConnectionManager.get_connection(agent.db) as conn:
             cursor = conn.cursor()
             
@@ -1559,18 +1559,18 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
                 cursor.close()
                 return {"success": False, "message": "Email non trouve ou deja envoye"}
             
-            logger.info(f"📧 Validation de l'email: {email['subject']} (ID: {email_id})")
+            logger.info(f"Validation de l'email: {email['subject']} (ID: {email_id})")
             logger.info(f"   Status actuel: {email['status']}, email_type: {email['email_type']}, delivery_status: {email['delivery_status']}")
             
-            # ✅ Si l'utilisateur n'a pas modifié le contenu, générer un email professionnel
+            # Si l'utilisateur n'a pas modifié le contenu, générer un email professionnel
             content = email['content']
             sujet = email['subject']
             
             if data and data.get('modified_content'):
                 content = data['modified_content']
-                logger.info("📝 Contenu modifié par l'utilisateur")
+                logger.info("Contenu modifié par l'utilisateur")
             else:
-                # ✅ Récupérer le nom du client
+                # Récupérer le nom du client
                 client_name = email['client_email'].split('@')[0]
                 try:
                     cursor.execute("SELECT name FROM clients WHERE id = %s OR email = %s", 
@@ -1581,7 +1581,7 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
                 except:
                     pass
                 
-                # ✅ Générer un email professionnel adapté à l'intention
+                # Générer un email professionnel adapté à l'intention
                 template = agent._generer_reponse_email_professionnelle(
                     email['intent'],
                     {'name': client_name, 'email': email['client_email']},
@@ -1589,7 +1589,7 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
                 )
                 content = template['corps']
                 sujet = template['objet']
-                logger.info(f"📝 Email professionnel généré: {sujet}")
+                logger.info(f"Email professionnel généré: {sujet}")
             
             # Envoyer l'email réel avec le contenu professionnel
             success = agent.email_sender.envoyer(
@@ -1601,7 +1601,7 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
             if success:
                 now = datetime.now()
                 
-                # ✅ METTRE À JOUR L'EMAIL ORIGINAL EN "SENT"
+                # METTRE À JOUR L'EMAIL ORIGINAL EN "SENT"
                 cursor.execute("""
                     UPDATE email_events
                     SET status = 'sent',
@@ -1613,23 +1613,23 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
                     WHERE id = %s
                 """, (content, sujet, now, email_id))
                 
-                # ✅ COMMIT EXPLICITE
+                # COMMIT EXPLICITE
                 conn.commit()
-                logger.info(f"✅ Commit effectué pour l'email {email_id}")
+                logger.info(f"Commit effectué pour l'email {email_id}")
                 
-                # ✅ Incrémenter les stats
+                # Incrémenter les stats
                 agent._increment_emails_envoyes()
                 
-                logger.info(f"✅ Email envoyé avec contenu professionnel: {sujet}")
+                logger.info(f"Email envoyé avec contenu professionnel: {sujet}")
                 
-                # ✅ Vérification immédiate
+                # Vérification immédiate
                 cursor.execute("""
                     SELECT email_type, status, delivery_status, sent_at
                     FROM email_events
                     WHERE id = %s
                 """, (email_id,))
                 check = cursor.fetchone()
-                logger.info(f"🔍 Vérification: email_type={check['email_type']}, status={check['status']}, sent_at={check['sent_at']}")
+                logger.info(f"Vérification: email_type={check['email_type']}, status={check['status']}, sent_at={check['sent_at']}")
                 
                 cursor.close()
                 
@@ -1640,7 +1640,7 @@ async def validate_and_send_email(email_id: str, data: Optional[dict] = None, us
                     "status": "sent"
                 }
             else:
-                logger.error(f"❌ Échec envoi email pending: {email['subject']}")
+                logger.error(f"Échec envoi email pending: {email['subject']}")
                 cursor.execute("""
                     UPDATE email_events
                     SET delivery_status = 'failed',
@@ -2025,7 +2025,7 @@ REPONSE (directe, concise, avec emoticone):"""
         )
         
         if response and response.startswith("Bonjour Client"):
-            response = response.replace("Bonjour Client", "👋")
+            response = response.replace("Bonjour Client", "Bonjour")
         
         if not response or len(response) < 5:
             raise Exception("Reponse vide")
@@ -2033,11 +2033,11 @@ REPONSE (directe, concise, avec emoticone):"""
         return {
             "reply": response,
             "suggested_questions": [
-                "📊 Performance des agents",
-                "💰 Factures impayees",
-                "📄 Contrats expires",
-                "🎫 Tickets support",
-                "📧 Emails en attente"
+                "Performance des agents",
+                "Factures impayees",
+                "Contrats expires",
+                "Tickets support",
+                "Emails en attente"
             ],
             "suggested_actions": [
                 "Voir les emails a valider",
@@ -2051,19 +2051,19 @@ REPONSE (directe, concise, avec emoticone):"""
         msg_lower = message.lower()
         
         if "bonjour" in msg_lower or "salut" in msg_lower or "coucou" in msg_lower:
-            reply = f"👋 Bonjour ! J'ai traite {s.get('emails_traites', 0)} emails avec {s.get('taux_succes', 0)}% de succes. Comment puis-je vous aider ?"
+            reply = f"Bonjour ! J'ai traite {s.get('emails_traites', 0)} emails avec {s.get('taux_succes', 0)}% de succes. Comment puis-je vous aider ?"
         elif "facture" in msg_lower:
-            reply = f"💰 {unpaid_invoices} facture(s) impayee(s). Voulez-vous generer des relances ?"
+            reply = f"{unpaid_invoices} facture(s) impayee(s). Voulez-vous generer des relances ?"
         elif "contrat" in msg_lower:
-            reply = f"📄 {expired_contracts} contrat(s) expire(s). Voulez-vous preparer les renouvellements ?"
+            reply = f"{expired_contracts} contrat(s) expire(s). Voulez-vous preparer les renouvellements ?"
         elif "ticket" in msg_lower or "support" in msg_lower:
-            reply = f"🎫 {open_tickets} ticket(s) support ouvert(s)."
+            reply = f"{open_tickets} ticket(s) support ouvert(s)."
         elif "performance" in msg_lower or "agent" in msg_lower:
-            reply = f"📊 Taux: {s.get('taux_succes', 0)}% | Temps: {s.get('temps_moyen', 0)}s | Analyses: {s.get('analyses_llm', 0)}"
+            reply = f"Taux: {s.get('taux_succes', 0)}% | Temps: {s.get('temps_moyen', 0)}s | Analyses: {s.get('analyses_llm', 0)}"
         elif "email" in msg_lower and ("attente" in msg_lower or "pending" in msg_lower):
-            reply = f"📧 Des emails sont en attente dans la section 'Emails a envoyer'."
+            reply = f"Des emails sont en attente dans la section 'Emails a envoyer'."
         else:
-            reply = f"🤔 Je peux vous aider avec :\n• Les statistiques 📊\n• Les factures 💰\n• Les contrats 📄\n• Les tickets 🎫\n• Les emails en attente 📧\n\nQue souhaitez-vous ?"
+            reply = f"Je peux vous aider avec :\n• Les statistiques\n• Les factures\n• Les contrats\n• Les tickets\n• Les emails en attente\n\nQue souhaitez-vous ?"
         
         return {
             "reply": reply,
@@ -2083,14 +2083,14 @@ if __name__ == "__main__":
     import uvicorn
     
     print("\n" + "="*70)
-    print("🚀 AGENT IA AUTONOME - STATS_GLOBALES (source unique)")
+    print("AGENT IA AUTONOME - STATS_GLOBALES (source unique)")
     print("="*70)
     
     agent.demarrer()
     s = get_dashboard_stats()
     
-    print("\n🐘 Base: PostgreSQL ✅")
-    print("📊 Statistiques 100% reelles (source unique = stats_globales):")
+    print("\nBase: PostgreSQL")
+    print("Statistiques 100% reelles (source unique = stats_globales):")
     print(f"   - Emails traites: {s.get('emails_traites', 0)}")
     print(f"   - Emails envoyes: {s.get('emails_envoyes', 0)}")
     print(f"   - Taux de succes: {s.get('taux_succes', 0)}%")
@@ -2100,9 +2100,9 @@ if __name__ == "__main__":
     print(f"   - Tickets: {s.get('tickets', 0)}")
     print(f"   - Analyses LLM: {s.get('analyses_llm', 0)}")
     print(f"   - Regles: {s.get('regles_declenchees', 0)}")
-    print("👥 Mapping des emails vers les 3 vrais clients active")
-    print("📚 Docs: http://localhost:8000/docs")
-    print("\n✨ NOUVEAUX ENDPOINTS AJOUTES :")
+    print("Mapping des emails vers les 3 vrais clients active")
+    print("Docs: http://localhost:8000/docs")
+    print("\nNOUVEAUX ENDPOINTS AJOUTES :")
     print("   - GET  /api/emails/pending     (Emails en attente de validation)")
     print("   - GET  /api/emails/sent        (Emails deja envoyes)")
     print("   - POST /api/emails/validate/   (Valider et envoyer un email)")

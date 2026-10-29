@@ -20,7 +20,7 @@ try:
     EMBEDDING_AVAILABLE = True
 except ImportError:
     EMBEDDING_AVAILABLE = False
-    print("⚠️  sentence-transformers non installé")
+    print("sentence-transformers non installé")
 
 class RealRAGEngine:
     """
@@ -29,7 +29,7 @@ class RealRAGEngine:
     """
 
     def __init__(self, collection_name: str = "business_docs"):
-        print(f"🔧 Initialisation FAISS: {collection_name}")
+        print(f"Initialisation FAISS: {collection_name}")
 
         self.llm_engine = LLMEngine()
         self.collection_name = collection_name
@@ -53,14 +53,14 @@ class RealRAGEngine:
         if len(self.documents) == 0:
             self._load_dataset()
 
-        print(f"✅ FAISS initialisé - Collection: {self.collection_name} ({len(self.documents)} documents)")
+        print(f"FAISS initialisé - Collection: {self.collection_name} ({len(self.documents)} documents)")
 
     def _init_faiss(self):
         """Initialise FAISS (équivalent de _get_or_create_collection)"""
         try:
             import faiss
         except ImportError:
-            print("❌ FAISS non installé. Installez avec: pip install faiss-cpu")
+            print("FAISS non installé. Installez avec: pip install faiss-cpu")
             raise
 
         if os.path.exists(self.index_file) and os.path.exists(self.doc_file):
@@ -68,9 +68,9 @@ class RealRAGEngine:
                 self.index = faiss.read_index(self.index_file)
                 with open(self.doc_file, 'rb') as f:
                     self.documents = pickle.load(f)
-                print(f"ℹ️  Collection chargée: {len(self.documents)} documents")
+                print(f"Collection chargée: {len(self.documents)} documents")
             except Exception as e:
-                print(f"⚠️  Erreur chargement: {e}")
+                print(f"Erreur chargement: {e}")
                 self.index = faiss.IndexFlatL2(self.embedding_dim)
                 self.documents = []
         else:
@@ -79,7 +79,7 @@ class RealRAGEngine:
 
     def _load_dataset(self):
         """Charge le dataset correspondant à la collection (chemins configurables via .env)"""
-        print(f"📥 Chargement du dataset {self.collection_name}...")
+        print(f"Chargement du dataset {self.collection_name}...")
 
         documents = []
 
@@ -89,7 +89,7 @@ class RealRAGEngine:
             if os.path.exists(csv_file):
                 try:
                     import pandas as pd
-                    print(f"📊 Chargement Enron (1.4GB)...")
+                    print(f"Chargement Enron (1.4GB)...")
                     # Lire les 2000 premières lignes
                     df = pd.read_csv(csv_file, nrows=2000, encoding='latin-1')
                     for _, row in df.iterrows():
@@ -104,9 +104,9 @@ class RealRAGEngine:
                                 'subject': str(row.get('subject', '')),
                                 'from': str(row.get('from', ''))
                             })
-                    print(f"✅ {len(documents)} emails Enron chargés")
+                    print(f"{len(documents)} emails Enron chargés")
                 except Exception as e:
-                    print(f"⚠️ Erreur Enron: {e}")
+                    print(f"Erreur Enron: {e}")
 
         # ========== CUSTOMER SUPPORT ==========
         elif self.collection_name == "support":
@@ -122,9 +122,9 @@ class RealRAGEngine:
                                 'content': content[:5000],
                                 'title': str(row.get('title', row.get('subject', '')))
                             })
-                    print(f"✅ {len(documents)} tickets support chargés")
+                    print(f"{len(documents)} tickets support chargés")
                 except Exception as e:
-                    print(f"⚠️ Erreur Support: {e}")
+                    print(f"Erreur Support: {e}")
 
         # ========== MULTIWOZ ==========
         elif self.collection_name == "multiwoz":
@@ -145,26 +145,26 @@ class RealRAGEngine:
                                                     for turn in dialogue['log']:
                                                         if 'text' in turn and turn['text']:
                                                             documents.append({'content': turn['text']})
-                    print(f"✅ {len(documents)} dialogues MultiWOZ chargés")
+                    print(f"{len(documents)} dialogues MultiWOZ chargés")
                 except Exception as e:
-                    print(f"⚠️ Erreur MultiWOZ: {e}")
+                    print(f"Erreur MultiWOZ: {e}")
 
         # ========== CUAD - Données de test ==========
         elif self.collection_name == "cuad":
-            print("⚠️ CUAD: génération de données de test (pas de dataset réel)...")
+            print("CUAD: génération de données de test (pas de dataset réel)...")
             for i in range(200):
                 documents.append({
                     'content': f"Contract {i}: Sample agreement with confidentiality, payment terms, and termination clauses. Parties agree to terms effective from January 1, 2025.",
                     'title': f"Contract_{i}"
                 })
-            print(f"✅ {len(documents)} contrats test générés")
+            print(f"{len(documents)} contrats test générés")
 
         # Indexation
         if documents:
-            print(f"📊 Indexation de {len(documents)} documents...")
+            print(f"Indexation de {len(documents)} documents...")
             self.index_documents(documents[:2000])
         else:
-            print(f"⚠️ Aucun document chargé pour {self.collection_name}")
+            print(f"Aucun document chargé pour {self.collection_name}")
 
     def index_documents(self, documents: List[Dict[str, Any]], batch_size: int = 50):
         """
@@ -172,10 +172,10 @@ class RealRAGEngine:
         MÊME INTERFACE que ChromaDB
         """
         if not documents:
-            print("⚠️  Aucun document à indexer")
+            print("Aucun document à indexer")
             return
 
-        print(f"📥 Indexation de {len(documents)} documents...")
+        print(f"Indexation de {len(documents)} documents...")
 
         ids = []
         texts = []
@@ -204,11 +204,11 @@ class RealRAGEngine:
             metadatas.append(metadata)
 
         if not ids:
-            print("ℹ️  Aucun nouveau document à indexer")
+            print("Aucun nouveau document à indexer")
             return
 
         # Générer les embeddings
-        print(f"📊 Génération des embeddings pour {len(ids)} documents...")
+        print(f"Génération des embeddings pour {len(ids)} documents...")
         embeddings = self.embedding_model.encode(texts)
 
         # Ajouter à l'index FAISS
@@ -225,7 +225,7 @@ class RealRAGEngine:
         # Sauvegarder sur disque
         self._save()
 
-        print(f"✅ {len(ids)} nouveaux documents indexés")
+        print(f"{len(ids)} nouveaux documents indexés")
 
     def search(self, query: str, n_results: int = 5) -> List[Dict]:
         """
@@ -260,7 +260,7 @@ class RealRAGEngine:
             return formatted
 
         except Exception as e:
-            print(f"❌ Erreur recherche: {e}")
+            print(f"Erreur recherche: {e}")
             return []
 
     def rag_generate(self, query: str, context_docs: int = 3) -> Dict[str, Any]:
@@ -327,10 +327,10 @@ class RealRAGEngine:
             self.index = faiss.IndexFlatL2(self.embedding_dim)
             self.documents = []
             self._save()
-            print(f"🗑️  Collection '{self.collection_name}' vidée")
+            print(f"Collection '{self.collection_name}' vidée")
             return True
         except Exception as e:
-            print(f"❌ Erreur: {e}")
+            print(f"Erreur: {e}")
             return False
 
     def _save(self):

@@ -1002,7 +1002,7 @@ class IntelligentAutonomousAgent:
         self._charger_donnees_test()
         self._index_datasets()
         
-        # ✅ Informations de l'entreprise pour les emails professionnels
+        # Informations de l'entreprise pour les emails professionnels
         self.nom_entreprise = "AI Agents Platform"
         self.adresse = "123 Avenue des Technologies, 75000 Paris"
         self.telephone = "+33 1 23 45 67 89"
@@ -1188,7 +1188,7 @@ class IntelligentAutonomousAgent:
             return []
     
     # ================================================================
-    # ✅ FONCTION VALIDER EMAIL AVEC TEMPLATES PROFESSIONNELS
+    # FONCTION VALIDER EMAIL AVEC TEMPLATES PROFESSIONNELS
     # ================================================================
     
     def _generer_reponse_email_professionnelle(self, intention: str, client: dict, donnees: dict) -> dict:
@@ -1352,7 +1352,7 @@ Site: {self.site_web}
                 logger.error(f"Email {email_id} non trouve ou deja traite")
                 return False
             
-            logger.info(f"📧 Validation de l'email: {email['subject']} (ID: {email_id})")
+            logger.info(f"Validation de l'email: {email['subject']} (ID: {email_id})")
             
             # Récupérer le nom du client
             client_name = email['client_email'].split('@')[0]
@@ -1389,7 +1389,7 @@ Site: {self.site_web}
             if success:
                 now = datetime.now()
                 
-                # ✅ METTRE À JOUR TOUS LES CHAMPS NÉCESSAIRES
+                # METTRE À JOUR TOUS LES CHAMPS NÉCESSAIRES
                 cursor.execute("""
                     UPDATE email_events
                     SET status = 'sent',
@@ -1402,24 +1402,24 @@ Site: {self.site_web}
                 
                 conn.commit()
                 
-                # ✅ Incrémenter les stats
+                # Incrémenter les stats
                 self._increment_emails_envoyes()
                 
-                logger.info(f"✅ Email validé et envoyé: {sujet}")
+                logger.info(f"Email validé et envoyé: {sujet}")
                 
-                # ✅ Vérification immédiate
+                # Vérification immédiate
                 cursor.execute("""
                     SELECT email_type, status, delivery_status, sent_at
                     FROM email_events
                     WHERE id = %s
                 """, (email_id,))
                 check = cursor.fetchone()
-                logger.info(f"🔍 Vérification: email_type={check['email_type']}, status={check['status']}, sent_at={check['sent_at']}")
+                logger.info(f"Vérification: email_type={check['email_type']}, status={check['status']}, sent_at={check['sent_at']}")
                 
                 cursor.close()
                 return True
             else:
-                logger.error(f"❌ Échec envoi email pending: {email['subject']}")
+                logger.error(f"Échec envoi email pending: {email['subject']}")
                 cursor.execute("""
                     UPDATE email_events
                     SET delivery_status = 'failed',

@@ -25,14 +25,14 @@ try:
     EMBEDDING_AVAILABLE = True
 except ImportError:
     EMBEDDING_AVAILABLE = False
-    print("⚠️  sentence-transformers non installé")
+    print("sentence-transformers non installé")
 
 try:
     import faiss
     FAISS_AVAILABLE = True
 except ImportError:
     FAISS_AVAILABLE = False
-    print("⚠️  faiss-cpu non installé")
+    print("faiss-cpu non installé")
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class RAGManager:
             raise ImportError("faiss-cpu est requis")
 
         # Modèle d'embedding (384 dimensions pour all-MiniLM-L6-v2)
-        print("📦 Chargement du modèle d'embeddings...")
+        print("Chargement du modèle d'embeddings...")
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.embedding_dim = 384
 
@@ -70,7 +70,7 @@ class RAGManager:
         # Charger toutes les collections existantes
         self._load_all_collections()
 
-        print("✅ RAG Manager initialisé")
+        print("RAG Manager initialisé")
 
     def _load_all_collections(self):
         """Charge toutes les collections existantes"""
@@ -88,9 +88,9 @@ class RAGManager:
                 self.indexes[collection_name] = faiss.read_index(index_file)
                 with open(doc_file, 'rb') as f:
                     self.documents[collection_name] = pickle.load(f)
-                logger.info(f"✅ Collection chargée: {collection_name} ({len(self.documents[collection_name])} docs)")
+                logger.info(f"Collection chargée: {collection_name} ({len(self.documents[collection_name])} docs)")
             except Exception as e:
-                logger.error(f"❌ Erreur chargement {collection_name}: {e}")
+                logger.error(f"Erreur chargement {collection_name}: {e}")
                 self.indexes[collection_name] = faiss.IndexFlatL2(self.embedding_dim)
                 self.documents[collection_name] = []
         else:
@@ -103,7 +103,7 @@ class RAGManager:
             logger.warning(f"Aucun document à indexer pour {collection_name}")
             return
 
-        print(f"📥 Indexation de {len(texts)} documents dans {collection_name}...")
+        print(f"Indexation de {len(texts)} documents dans {collection_name}...")
 
         # Générer les embeddings
         embeddings = self.embedding_model.encode(texts, show_progress_bar=True)
@@ -119,7 +119,7 @@ class RAGManager:
         # Sauvegarder sur disque
         self._save_collection(collection_name)
 
-        print(f"✅ {len(texts)} documents indexés dans {collection_name}")
+        print(f"{len(texts)} documents indexés dans {collection_name}")
 
     def search(self, query: str, collection: str = None, n_results: int = 5) -> List[Dict]:
         """
@@ -201,7 +201,7 @@ class RAGManager:
         self.indexes[collection_name] = faiss.IndexFlatL2(self.embedding_dim)
         self.documents[collection_name] = []
         self._save_collection(collection_name)
-        print(f"🗑️  Collection {collection_name} vidée")
+        print(f"Collection {collection_name} vidée")
 
 
 # ===================================================================
@@ -222,7 +222,7 @@ class DatasetLoader:
 
         if os.path.exists(csv_file):
             try:
-                print(f"📊 Chargement Enron ({limit} emails)...")
+                print(f"Chargement Enron ({limit} emails)...")
                 df = pd.read_csv(csv_file, nrows=limit, encoding='latin-1')
                 for _, row in df.iterrows():
                     content = ""
@@ -239,11 +239,11 @@ class DatasetLoader:
                             'text': content[:5000]
                         })
                         texts.append(content[:5000])
-                print(f"✅ {len(documents)} emails Enron chargés")
+                print(f"{len(documents)} emails Enron chargés")
             except Exception as e:
-                print(f"⚠️ Erreur Enron: {e}")
+                print(f"Erreur Enron: {e}")
         else:
-            print(f"⚠️ Fichier Enron non trouvé: {csv_file}")
+            print(f"Fichier Enron non trouvé: {csv_file}")
 
         return documents, texts
 
@@ -258,7 +258,7 @@ class DatasetLoader:
 
         if os.path.exists(dataset_path):
             try:
-                print(f"📊 Chargement CUAD...")
+                print(f"Chargement CUAD...")
                 # Chercher les fichiers JSON
                 for file in os.listdir(dataset_path):
                     if file.endswith('.json') and 'readme' not in file.lower():
@@ -276,13 +276,13 @@ class DatasetLoader:
                                             'text': text[:8000]
                                         })
                                         texts.append(text[:8000])
-                print(f"✅ {len(documents)} contrats CUAD chargés")
+                print(f"{len(documents)} contrats CUAD chargés")
             except Exception as e:
-                print(f"⚠️ Erreur CUAD: {e}")
+                print(f"Erreur CUAD: {e}")
         else:
-            print(f"⚠️ Dossier CUAD non trouvé: {dataset_path}")
+            print(f"Dossier CUAD non trouvé: {dataset_path}")
             # Générer des données de test
-            print("   🔧 Génération de données de test pour CUAD...")
+            print("   Génération de données de test pour CUAD...")
             for i in range(200):
                 documents.append({
                     'source': 'cuad',
@@ -306,7 +306,7 @@ class DatasetLoader:
 
         if os.path.exists(csv_file):
             try:
-                print(f"📊 Chargement Support ({limit} tickets)...")
+                print(f"Chargement Support ({limit} tickets)...")
                 df = pd.read_csv(csv_file, nrows=limit)
                 for _, row in df.iterrows():
                     content = str(row.get('description', row.get('text', row.get('body', ''))))
@@ -318,11 +318,11 @@ class DatasetLoader:
                             'text': content[:5000]
                         })
                         texts.append(content[:5000])
-                print(f"✅ {len(documents)} tickets support chargés")
+                print(f"{len(documents)} tickets support chargés")
             except Exception as e:
-                print(f"⚠️ Erreur Support: {e}")
+                print(f"Erreur Support: {e}")
         else:
-            print(f"⚠️ Fichier Support non trouvé: {csv_file}")
+            print(f"Fichier Support non trouvé: {csv_file}")
 
         return documents, texts
 
@@ -338,7 +338,7 @@ class DatasetLoader:
 
         if os.path.exists(dataset_path):
             try:
-                print(f"📊 Chargement MultiWOZ...")
+                print(f"Chargement MultiWOZ...")
                 for root, dirs, files in os.walk(dataset_path):
                     for file in files:
                         if file.endswith('.json') and count < limit:
@@ -358,11 +358,11 @@ class DatasetLoader:
                                                     })
                                                     texts.append(text)
                                                     count += 1
-                print(f"✅ {len(documents)} dialogues MultiWOZ chargés")
+                print(f"{len(documents)} dialogues MultiWOZ chargés")
             except Exception as e:
-                print(f"⚠️ Erreur MultiWOZ: {e}")
+                print(f"Erreur MultiWOZ: {e}")
         else:
-            print(f"⚠️ Dossier MultiWOZ non trouvé: {dataset_path}")
+            print(f"Dossier MultiWOZ non trouvé: {dataset_path}")
 
         return documents, texts
 
@@ -370,7 +370,7 @@ class DatasetLoader:
     def load_all_datasets() -> Dict[str, tuple]:
         """Charge tous les datasets"""
         print("\n" + "="*60)
-        print("📊 CHARGEMENT DE TOUS LES DATASETS")
+        print("CHARGEMENT DE TOUS LES DATASETS")
         print("="*60)
 
         datasets = {

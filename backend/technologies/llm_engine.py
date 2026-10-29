@@ -11,16 +11,16 @@ class LLMEngine:
     def __init__(self):
         self.api_key = os.getenv("GROQ_API_KEY")
 
-        # ✅ MODÈLES ACTIFS EN FÉVRIER 2026
+        # MODÈLES ACTIFS EN FÉVRIER 2026
         self.model = "llama-3.3-70b-versatile"
         self.base_url = "https://api.groq.com/openai/v1"
 
-        print(f"✅ LLM Engine initialisé avec Groq - Modèle: {self.model}")
+        print(f"LLM Engine initialisé avec Groq - Modèle: {self.model}")
 
         if not self.api_key:
-            print("⚠️  Attention: GROQ_API_KEY non trouvée")
+            print("Attention: GROQ_API_KEY non trouvée")
         else:
-            print("🔑 Clé API configurée")
+            print("Clé API configurée")
 
     def generate_chat(self, prompt: str, system_message: str = None) -> str:
         """Génère une réponse avec Groq API"""
@@ -51,7 +51,7 @@ class LLMEngine:
                 "stream": False
             }
 
-            print(f"📤 Appel à Groq API avec modèle {self.model}...")
+            print(f"Appel à Groq API avec modèle {self.model}...")
 
             response = requests.post(
                 f"{self.base_url}/chat/completions",
@@ -63,11 +63,11 @@ class LLMEngine:
             if response.status_code == 200:
                 result = response.json()
                 answer = result['choices'][0]['message']['content']
-                print(f"✅ Réponse reçue ({len(answer)} caractères)")
+                print(f"Réponse reçue ({len(answer)} caractères)")
                 return answer
             else:
                 error_msg = f"Erreur API Groq ({response.status_code}): {response.text}"
-                print(f"❌ {error_msg}")
+                print(f"{error_msg}")
 
                 if response.status_code == 401:
                     return "**Erreur d'authentification**\n\nVotre clé API Groq est invalide."
@@ -75,13 +75,13 @@ class LLMEngine:
                     return f"**Erreur de génération**\n\n{error_msg}"
 
         except requests.exceptions.Timeout:
-            print("❌ Timeout")
+            print("Timeout")
             return "**Erreur**\n\nDélai d'attente dépassé."
         except requests.exceptions.ConnectionError:
-            print("❌ Erreur de connexion")
+            print("Erreur de connexion")
             return "**Erreur**\n\nImpossible de se connecter à l'API Groq."
         except Exception as e:
-            print(f"❌ Exception: {e}")
+            print(f"Exception: {e}")
             return f"**Erreur inattendue**\n\n{str(e)}"
 
     def comprendre_intention(self, texte: str) -> Dict:
@@ -116,7 +116,7 @@ Réponse JSON:"""
             }
 
         except Exception as e:
-            print(f"❌ Erreur compréhension: {e}")
+            print(f"Erreur compréhension: {e}")
             return {
                 "intention": "general",
                 "sentiment": "neutre",
@@ -130,19 +130,19 @@ Réponse JSON:"""
         try:
             from sentence_transformers import SentenceTransformer
 
-            print("📦 Chargement du modèle d'embeddings...")
+            print("Chargement du modèle d'embeddings...")
             model = SentenceTransformer('all-MiniLM-L6-v2')
 
-            print(f"📊 Génération de {len(texts)} embeddings...")
+            print(f"Génération de {len(texts)} embeddings...")
             embeddings = model.encode(texts, show_progress_bar=False)
 
             return embeddings.tolist()
 
         except ImportError:
-            print("⚠️ sentence-transformers non installé")
+            print("sentence-transformers non installé")
             return [[0.0] * 384 for _ in texts]
         except Exception as e:
-            print(f"❌ Erreur embeddings: {e}")
+            print(f"Erreur embeddings: {e}")
             return [[0.0] * 384 for _ in texts]
 
     def test_connection(self):
@@ -189,7 +189,7 @@ Réponse JSON:"""
             user_message = contexte.get('user_message', '')
 
             if system_prompt and user_message:
-                print("📝 Utilisation du system_prompt personnalisé pour le chatbot")
+                print("Utilisation du system_prompt personnalisé pour le chatbot")
                 response = self.generate_chat(
                     prompt=user_message,
                     system_message=system_prompt
@@ -221,5 +221,5 @@ RÉPONSE:
             return response
 
         except Exception as e:
-            print(f"❌ Erreur génération réponse: {e}")
+            print(f"Erreur génération réponse: {e}")
             return f"Bonjour {client.get('nom', 'Client')},\n\nNous avons bien reçu votre message concernant {intention}. Notre équipe va traiter votre demande dans les plus brefs délais.\n\nCordialement,\nService Client Automatique"

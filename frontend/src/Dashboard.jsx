@@ -958,7 +958,7 @@ const PendingEmailsSection = ({ pendingEmails, onValidate, onRefresh }) => {
 // COMPOSANT SENT EMAILS - SANS FILTRE (AFFICHE TOUT)
 // ============================================================
 const SentEmailsSection = ({ sentEmails, onRefresh }) => {
-  // ✅ AUCUN FILTRE - AFFICHE TOUS LES EMAILS
+  // AUCUN FILTRE - AFFICHE TOUS LES EMAILS
   const filteredEmails = sentEmails;
 
   if (filteredEmails.length === 0) {
@@ -2094,7 +2094,7 @@ const Dashboard = () => {
     setShowClientDetail(false);
   };
 
-  // ✅ FORCER LE RAFFRAÎCHISSEMENT COMPLET
+  // FORCER LE RAFFRAÎCHISSEMENT COMPLET
   const forceRefresh = () => {
     setLastRefresh(new Date());
     loadAllData();
@@ -2160,24 +2160,24 @@ const Dashboard = () => {
     }
   };
 
-  // ✅ VALIDER ET ENVOYER UN EMAIL - AVEC RAFFRAÎCHISSEMENT FORCÉ
+  // VALIDER ET ENVOYER UN EMAIL - AVEC RAFFRAÎCHISSEMENT FORCÉ
   const handleValidateEmail = async (emailId, modifiedContent = null) => {
     try {
       const result = await api.validateAndSendEmail(emailId, modifiedContent);
       if (result.success) {
         addNotification(result.message, "success");
         
-        // ✅ FORCER LE RAFFRAÎCHISSEMENT COMPLET
+        // FORCER LE RAFFRAÎCHISSEMENT COMPLET
         await loadAllData();
         
-        // ✅ FORCER LA RE-RENDU
+        // FORCER LA RE-RENDU
         setLastRefresh(new Date());
         
-        // ✅ VÉRIFIER QUE L'EMAIL A BIEN DISPARU DES PENDING
+        // VÉRIFIER QUE L'EMAIL A BIEN DISPARU DES PENDING
         const pendingData = await api.getPendingEmails();
         setPendingEmails(pendingData.pending_emails || []);
         
-        // ✅ VÉRIFIER QUE L'EMAIL APPARAÎT DANS SENT
+        // VÉRIFIER QUE L'EMAIL APPARAÎT DANS SENT
         const sentData = await api.getSentEmails();
         setSentEmails(sentData.sent_emails || []);
         
@@ -2284,7 +2284,7 @@ const Dashboard = () => {
     { name: "Facture", value: 6, color: "#C850C0" }
   ];
 
-  // Menu items - ✅ CORRIGÉS
+  // Menu items - CORRIGÉS
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, adminOnly: false },
     { id: "analytics", label: "Analytiques", icon: TrendingUp, adminOnly: false },
