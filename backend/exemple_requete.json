@@ -1,0 +1,10 @@
+{
+  "type": "facture",
+  "donnees": {
+    "description": "Probleme de facture - montant trop eleve",
+    "client": "Jean Martin",
+    "email": "jean.martin@email.com",
+    "montant": 250,
+    "montant_attendu": 200
+  }
+}
