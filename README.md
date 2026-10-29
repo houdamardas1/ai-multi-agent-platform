@@ -1,30 +1,32 @@
 # AI Multi-Agent Platform
 
-Production-oriented AI platform designed to automate email workflows using multiple AI agents.
+Multi-agent platform that automates email workflows using RAG and LLMs.
+Graduation project (PFE, Feb–Aug 2026) at Alexsys Solutions.
 
-## Features
+## What it does
 
-* Multi-agent orchestration
-* LLM-powered reasoning
-* Retrieval-Augmented Generation (RAG)
-* Semantic search with FAISS
-* FastAPI backend
-* Docker deployment
+- Receives an email and retrieves relevant context with semantic search (FAISS)
+- Orchestrates several agents to analyze, decide and draft a response with an LLM
+- Exposes everything through an asynchronous FastAPI backend
 
-## Tech Stack
+## Tech stack
 
-* Python
-* FastAPI
-* LangChain
-* FAISS
-* PostgreSQL
-* Redis
-* Docker
+Python · FastAPI · LangChain · FAISS · PostgreSQL · Redis · Docker
 
 ## Architecture
 
-User Request → Retrieval → Agent Orchestration → LLM Processing → Response
+```mermaid
+flowchart LR
+    E[Incoming email] --> A[FastAPI API]
+    A --> R[Retrieval<br/>FAISS]
+    R --> O[Agent orchestration]
+    O --> L[LLM]
+    L --> D[Draft response]
+    A --> P[(PostgreSQL)]
+    A --> Q[(Redis)]
+```
 
 ## Status
 
-Professional AI Engineering Project
+The source code is not public because it was developed in a professional setting.
+A walkthrough of the architecture can be shared on request.
