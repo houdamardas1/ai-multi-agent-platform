@@ -24,7 +24,10 @@ real tasks under business rules and control mechanisms:
 
 ## Demo
 
-[![Watch the 10-minute demo](docs/demo-thumbnail.png)](docs/demo.mp4)
+[![Watch the 2-minute demo](docs/demo-thumbnail.png)](docs/demo-short.mp4)
+
+🎬 **[Watch the 2-minute highlights](docs/demo-short.mp4)**: multi-agent architecture, RAG pipeline,
+email automation, human-in-the-loop approval and the visual workflow builder.
 
 ▶️ **[Watch the full demo (10 min)](docs/demo.mp4)**: admin dashboard and analytics, request
 processing, email approval queue, real emails received in Gmail, visual workflow editor, AI
