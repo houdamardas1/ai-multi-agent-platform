@@ -1,0 +1,33 @@
+# Secrets et identifiants
+.env
+.env.*
+!.env.example
+token.pickle
+credentials.json
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Données locales et index
+chroma_db/
+datasets/
+data/
+*.faiss
+*.pkl
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
