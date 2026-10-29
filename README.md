@@ -22,6 +22,14 @@ real tasks under business rules and control mechanisms:
 > Designed and built by **[Houda Mardas](#author)** as her engineering final-year project
 > (PFE, Feb–Aug 2026) at Alexsys Solutions, Casablanca.
 
+## Demo
+
+[![Watch the 10-minute demo](docs/demo-thumbnail.png)](docs/demo.mp4)
+
+▶️ **[Watch the full demo (10 min)](docs/demo.mp4)**: admin dashboard and analytics, request
+processing, email approval queue, real emails received in Gmail, visual workflow editor, AI
+document upload, logs, AI assistant, client view and the PostgreSQL database.
+
 ## Key features
 
 - **Multi-agent processing**: ingestion, intent analysis, document retrieval, response generation, orchestration and business actions.
@@ -131,3 +139,7 @@ Engineering & AI (HESTIM, Casablanca)
 - GitHub: [@houdamardas1](https://github.com/houdamardas1)
 - LinkedIn: [houda-m-567987243](https://www.linkedin.com/in/houda-m-567987243)
 - Portfolio: [portfoliohouda-mardas.netlify.app](https://portfoliohouda-mardas.netlify.app)
+
+## License
+
+Released under the [MIT License](LICENSE).
